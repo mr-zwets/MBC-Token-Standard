@@ -59,7 +59,7 @@ The genesis transaction has 5 outputs in the following structure:
 
 The first and last output are for the BCMR on-chain metadata.
 The second output is the simple minting covenant specified in `mintingCovenant.cash` which holds the reserved token supply.
-The 'minting baton' is a one-off immutable NFT with empty commitment (`0x`) and of the same tokenId as the created fungible tokens.
+The 'minting baton' is a one-off immutable NFT with a zero commitment (`0x00`) and of the same tokenId as the created fungible tokens.
 The third output is the minting baton, an immutable one-off NFT with the same tokenId as the fungible tokens created.
 The fourth output are the tokens released into circulation right away.
 
@@ -148,6 +148,8 @@ The following software is known to support Bitcoin Cash Metadata Registries:
 Thank you to Imaginary_username, Joemar Taganna, Dagur Valberg and bitcoincashautist for providing early feedback.
 
 ## Changelog
+- **v0.1.1 – 2022-7-10**
+  - fixed issue empty commit in covenant
 - **v0.1.0 – 2022-7-10**
   - first published draft version
 

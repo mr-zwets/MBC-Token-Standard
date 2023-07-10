@@ -12,11 +12,11 @@
       "inputs": []
     }
   ],
-  "bytecode": "OP_1 OP_UTXOTOKENCATEGORY OP_EQUALVERIFY OP_1 OP_UTXOTOKENCOMMITMENT OP_0 OP_EQUALVERIFY OP_0 OP_OUTPUTBYTECODE OP_INPUTINDEX OP_UTXOBYTECODE OP_EQUAL",
-  "source": "pragma cashscript ^0.8.0;\r\n\r\n// covenant of the CCI token standard\r\n// Covenant unlocked by a specific NFT\r\n\r\n// Opcode count: 8 (max 201)\r\n// Bytesize: 45 (max 520)\r\n\r\ncontract mintingCovenant(\r\n    bytes tokenId\r\n) {\r\n    function unlockWithNft() {\r\n        // Check that the first input holds the minting baton\r\n        require(tx.inputs[1].tokenCategory == tokenId);\r\n        require(tx.inputs[1].nftCommitment == 0x);\r\n        // Self preservation of the minting covenant as the first output \r\n        require(tx.outputs[0].lockingBytecode == tx.inputs[this.activeInputIndex].lockingBytecode);\r\n    }\r\n}",
+  "bytecode": "OP_1 OP_UTXOTOKENCATEGORY OP_EQUALVERIFY OP_1 OP_UTXOTOKENCOMMITMENT 00 OP_EQUALVERIFY OP_0 OP_OUTPUTBYTECODE OP_INPUTINDEX OP_UTXOBYTECODE OP_EQUAL",
+  "source": "pragma cashscript ^0.8.0;\r\n\r\n// covenant of the CCI token standard\r\n// Covenant unlocked by a specific NFT\r\n\r\n// Opcode count: 8 (max 201)\r\n// Bytesize: 46 (max 520)\r\n\r\ncontract mintingCovenant(\r\n    bytes tokenId\r\n) {\r\n    function unlockWithNft() {\r\n        // Check that the first input holds the minting baton\r\n        require(tx.inputs[1].tokenCategory == tokenId);\r\n        require(tx.inputs[1].nftCommitment == 0x00);\r\n        // Self preservation of the minting covenant as the first output \r\n        require(tx.outputs[0].lockingBytecode == tx.inputs[this.activeInputIndex].lockingBytecode);\r\n    }\r\n}",
   "compiler": {
     "name": "cashc",
     "version": "0.8.0"
   },
-  "updatedAt": "2023-07-10T15:00:04.192Z"
+  "updatedAt": "2023-07-10T18:57:38.961Z"
 }
