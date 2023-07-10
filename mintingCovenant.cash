@@ -1,0 +1,19 @@
+pragma cashscript ^0.8.0;
+
+// covenant of the CCI token standard
+// Covenant unlocked by a specific NFT
+
+// Opcode count: 8 (max 201)
+// Bytesize: 45 (max 520)
+
+contract mintingCovenant(
+    bytes tokenId
+) {
+    function unlockWithNft() {
+        // Check that the first input holds the minting baton
+        require(tx.inputs[1].tokenCategory == tokenId);
+        require(tx.inputs[1].nftCommitment == 0x);
+        // Self preservation of the minting covenant as the first output 
+        require(tx.outputs[0].lockingBytecode == tx.inputs[this.activeInputIndex].lockingBytecode);
+    }
+}
