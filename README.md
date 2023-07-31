@@ -6,7 +6,7 @@
         Owners: Mathieu Geukens 
         Status: Draft
         Initial Publication Date: 2023-07-10
-        Latest Revision Date: 2023-07-10
+        Latest Revision Date: 2023-07-31
 
 ## Introduction
 
@@ -25,8 +25,7 @@ This proposal does not require coordinated deployment.
 This specification is a standard to create minting baton functionality for CashTokens. Bitcoin Cash does not have 
 the concept of a minting baton for fungible CashTokens natively because then the token amount could overflow 64-bit integer size.
 Other token protocols, such as SLP and ERC20, allow for issuing supply on an ongoing basis with a minting token.
-The CashTokens specification does propose how to mark supply as reserved, held by the trusted entity and not in circulation but this
-has not been implemented anywhere thusfar because it is not straightforward.
+The CashTokens and BCMR specifications propose how to mark supply as reserved, held by the trusted entity and not in circulation but this is not exaclty the minting baton functionality and has drawbacks of its own.
 
 This standard uses a covenant holding the reserved supply to create a minting baton NFT for fungible CashTokens.
 An extension to the BCMR metadata schema is specified for tokens following the MBC token-standard, this way applications such as wallets and
@@ -44,6 +43,10 @@ The minting covenant managing the reserved supply is very minimal and simple wit
 By integrating with the BCMR standard from the start and by using an authchain to track the covenant instead of needing specific indexed tokens,
 this specification focuses on being a practical solution.
 The MBC standard makes it easy to track the minting history, the issued and unissued supply and any transfers of the minting authority.
+
+### Known Method
+
+The concept of a minting baton is familiar, it is a known method from other token standards. The issuer pre-minting the maximum supply to his own address and marking it as reserved is different from this. Having the maximum supply already in the wallet of the issuer feels very different from just having the option to mint more.
 
 ## Technical Specification
 
@@ -125,19 +128,31 @@ Creating the covenant right away also makes it possible to track the minting cov
 
 ### CashTokens spec
 
-The [CashTokens specification](https://github.com/cashtokens/cashtokens) proposes how reserved supply of fungible tokens should be marked.
+The [CashTokens specification](https://github.com/cashtokens/cashtokens) proposes how reserved supply of fungible tokens should be marked in the [fungible-token-supply-definitions](https://github.com/cashtokens/cashtokens#fungible-token-supply-definitions) section.
 The specification suggests keeping the unissued supply in covenants holding `minting` or `mutable` NFT of the same tokenId.
-This an odd usecase of the nft capabilities as there is no need for minting new NFTs or mutating state, just the need for a marker.
+This is with the usecase of multi-threaded covenant design in mind so there is a need for multiple markers.
 
-Instead, the MBC standard keeps the reserved supply in a single covenant so the full minting history can be tracked with just the authchain.
+Instead, the MBC standard keeps the reserved supply in a single covenant so the full minting history can be tracked with just the authchain 
+as to enable validation of the reserved supply by by light clients.
 Compared to the CashTokens spec, this simplifies getting the minting history, it also make a key rotation/transfer of the authority to mint 
 new tokens separate from the minting history itself, as those are now done by sending the minting baton.
 Lastly, this standard makes it clear through the BCMR metadata that the token follows the MBC specification so applications can correctly display 
 the minting baton NFT and information about issued supply, reserved supply, etc.
 
+### BCMR spec
+
+The [BCMR specification](https://github.com/bitjson/chip-bcmr#providing-for-continued-issuance-of-fungible-tokens) further details how reserved supply can be verified by light clients in [continued-issuance-of-fungible-tokens](https://github.com/bitjson/chip-bcmr#providing-for-continued-issuance-of-fungible-tokens) section. 
+This is achieved by keeping the reserved supply in the identity output and marked by a `mutable` NFT.
+
+Using an authchain to track the reserved/unissued supply is similar to the current proposal, but using the token's authchain for both metadata updates and issuance makes it harder to separate both events. 
+If you want to control the issuance with a covenant like the current proposal, the covenant would also have to allow for metadata updates.
+
+For light clients it is not clear when they should check the identity output for reserved supply and when there are multiple reserved supply markers.
+That is why the current proposal proposes a `BCMR` extension to tell clients when they can check the reserved supply by following the authchain.
+
 ## Implementations
 
-The following software is known to support Bitcoin Cash Metadata Registries:
+The following software is known to support the MBC-standard:
 
 *(pending initial implementations)*
 
@@ -148,6 +163,9 @@ The following software is known to support Bitcoin Cash Metadata Registries:
 Thank you to Imaginary_username, Joemar Taganna, Dagur Valberg and bitcoincashautist for providing early feedback.
 
 ## Changelog
+- **v0.1.2 – 2022-7-31**
+  - added Known Method section to the benefits
+  - added BCMR spec to evaluated alternatives
 - **v0.1.1 – 2022-7-10**
   - fixed issue empty commit in covenant
 - **v0.1.0 – 2022-7-10**
